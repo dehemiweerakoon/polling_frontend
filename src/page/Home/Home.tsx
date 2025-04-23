@@ -1,6 +1,8 @@
 import { motion } from "motion/react";
 import { LampContainer } from "../../components/ui/lamp";
-
+import CreatePoll from "../../components/createPoll/CreatePoll";
+import { HashLink } from "react-router-hash-link";
+import Poll from "../Poll/Poll";
 export function LampDemo() {
   return (
     <LampContainer>
@@ -18,7 +20,11 @@ export function LampDemo() {
         <br />
         Right Away
       </motion.h1>{" "}
-      <button className="text-violet-100">Create a Poll</button>
+      <HashLink to="/#pollCreation">
+        <button className="text-violet-100 border-2 border-violet-700 px-5 py-2 rounded-2xl mt-10 cursor-pointer">
+          Create a Poll
+        </button>
+      </HashLink>
     </LampContainer>
   );
 }
@@ -27,6 +33,8 @@ const Home = () => {
   return (
     <>
       <LampDemo />
+      <CreatePoll />
+      <Poll/>
     </>
   );
 };
