@@ -10,7 +10,7 @@ interface PollChangeParams {
 }
 export default function Poll() {
   const [pin, setPin] = useState(["", "", "", ""]);
-  const [selectedOption, setSelectedOption] = useState(0);
+  const [selectedOption, setSelectedOption] = useState(1);
   const [polls, setPolls] = useState<PollChangeParams[]>([]);
 
   interface HandleChangeParams {
@@ -39,6 +39,7 @@ export default function Poll() {
   const handleSubmit = async () => {
     const pollId = pin.join("");
     if (pollId.length === 4) {
+      sessionStorage.setItem('pollId',pollId);
       const response = await axios.get(
         `http://localhost:9000/api/question/poll/${pollId}`
       );
@@ -121,6 +122,7 @@ export default function Poll() {
       <select
         id="underline_select"
         className="block py-2.5 px-5 text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
+
         onChange={(e) => setSelectedOption(Number(e.target.value))}
       >
         {polls.map((poll) => (

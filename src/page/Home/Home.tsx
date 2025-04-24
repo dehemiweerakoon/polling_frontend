@@ -3,6 +3,7 @@ import { LampContainer } from "../../components/ui/lamp";
 import CreatePoll from "../../components/createPoll/CreatePoll";
 import { HashLink } from "react-router-hash-link";
 import Poll from "../Poll/Poll";
+import PollUpdates from "../../components/PollUpdates/PollUpdates";
 export function LampDemo() {
   return (
     <LampContainer>
@@ -21,7 +22,7 @@ export function LampDemo() {
         Right Away
       </motion.h1>{" "}
       <HashLink to="/#pollCreation">
-        <button className="text-violet-100 border-2 border-violet-700 px-5 py-2 rounded-2xl mt-10 cursor-pointer">
+        <button className="text-violet-100 border-2 bg-gradient-to-l from-sky-800 to-violet-800  border-violet-700 hover:from-pink-400 hover:left-2 hover:to-violet-400 px-5 py-2 rounded-2xl mt-10 cursor-pointer">
           Create a Poll
         </button>
       </HashLink>
@@ -30,11 +31,13 @@ export function LampDemo() {
 }
 
 const Home = () => {
+
   return (
     <>
       <LampDemo />
       <CreatePoll />
       <Poll/>
+      <PollUpdates/>
     </>
   );
 };
