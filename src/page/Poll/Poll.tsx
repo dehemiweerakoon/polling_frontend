@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import axios from "axios";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Bounce, toast, ToastContainer } from "react-toastify";
 interface PollChangeParams {
   id: number;
@@ -12,6 +12,7 @@ export default function Poll() {
   const [pin, setPin] = useState(["", "", "", ""]);
   const [selectedOption, setSelectedOption] = useState(1);
   const [polls, setPolls] = useState<PollChangeParams[]>([]);
+  //const nav = useNavigate();
 
   interface HandleChangeParams {
     value: string;
@@ -51,7 +52,6 @@ export default function Poll() {
   };
 
   const handleUserVote = async () => {
-    console.log(selectedOption);
     try {
       const response = await axios.put(
         `http://localhost:9000/api/question/vote/${selectedOption}`
@@ -71,6 +71,7 @@ export default function Poll() {
         });
       }
     } catch (error) {
+      console.log(error);
       toast.error("Error Submitting Poll ID", {
         position: "top-right",
         autoClose: 5000,

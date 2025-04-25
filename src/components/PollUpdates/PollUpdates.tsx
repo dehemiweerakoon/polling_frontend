@@ -1,74 +1,112 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState } from "react";
-import io from "socket.io-client";
-
+import io, { Socket } from "socket.io-client";
 import { PieChart, Pie, Tooltip, Cell, ResponsiveContainer } from "recharts";
 
-interface DataInt {
+interface PollData {
+  id: number;
   question: string;
-  count: string;
+  count: number;
+  pollId: number;
 }
 
-const COLORS = ["#1e2c60","#8accb3","	#f224a4","#ff3b3b","#feadb9","#fff4a4"];
+const COLORS = ["#1e2c60", "#8accb3", "#f224a4", "#ff3b3b", "#feadb9", "#fff4a4"];
 
 export default function PollUpdates() {
-  const [pollDetails, setPollDetails] = useState<DataInt[]>([]);
-  const [data, setData] = useState<DataInt[]>([]);
+  const [pollData, setPollData] = useState<PollData[]>([]);
+  const [socket, setSocket] = useState<Socket | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const socket = io("http://localhost:9000"); // adjust as needed
-    socket.on("pollUpdated", (updatedPoll) => {
+    // Initialize socket connection
+    const newSocket = io("http://localhost:9000");
+    setSocket(newSocket);
+
+    // Get pollId from sessionStorage
+    const pollId = sessionStorage.getItem('pollId')||'9';
+    console.log(pollId);
+    if (!pollId) {
+      setError("No poll ID found in session storage");
+      return;
+    }
+
+    // Join poll room
+    newSocket.emit('joinPollRoom', parseInt(pollId));
+
+    // Set up event listeners
+    newSocket.on("pollUpdated", (updatedPoll: PollData[]) => {
       console.log("Real-time poll update:", updatedPoll);
-      setPollDetails(updatedPoll);
+      setPollData(updatedPoll);
     });
 
+    newSocket.on("connect_error", (err) => {
+      console.error("Connection error:", err);
+      setError("Failed to connect to real-time server");
+    });
+
+    // Cleanup function
     return () => {
-      socket.off("pollUpdated");
+      newSocket.off("pollUpdated");
+      newSocket.off("connect_error");
+      newSocket.disconnect();
     };
   }, []);
-  useEffect(() => {
-    function getReacts() {
-      setData([]);
-      pollDetails.map((poll: DataInt) => {
-        const data = {
-          question: poll.question,
-          count: poll.count,
-        };
-        console.log(data)
-        setData((prevData) => [...prevData, data]);
-      });
-    }
-    getReacts();
-  }, [pollDetails]);
+
+  // Format data for PieChart
+  const chartData = pollData.map((poll) => ({
+    name: poll.question,
+    value: poll.count,
+  }));
+
+  // if (error) {
+  //   return (
+  //     <div className="bg-black text-white flex flex-col justify-center items-center h-screen">
+  //       <div className="bg-red-500 text-white p-4 rounded-lg">
+  //         Error: {error}
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
-    <div className="bg-black text-white flex flex-col justify-center items-center">
-      <h1>hi ... ...</h1>
-      <div></div>
-      {/**this main idea is to create  */}
-      <div className="w-full max-w-md h-96 p-4 bg-white rounded-2xl shadow-md">
-        <h2 className="text-xl font-semibold mb-4 text-center">
-          User Distribution
+    <div className="bg-black text-white min-h-screen flex flex-col mt-0 justify-center items-center p-4">
+      <h1 className="text-2xl font-bold mb-8">Live Poll Results</h1>
+      
+      <div className="w-full max-w-md h-96 p-4 bg-white rounded-2xl shadow-lg">
+        <h2 className="text-xl font-semibold mb-4 text-center text-gray-800">
+          Vote Distribution
         </h2>
-        <ResponsiveContainer width="100%" height="80%">
-          <PieChart>
-            <Pie
-              data={data}
-              dataKey="count"
-              nameKey="question"
-              outerRadius={100}
-              fill="#8884d8"
-              label
-            >
-              {data.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={COLORS[index % COLORS.length]}
-                />
-              ))}
-            </Pie>
-            <Tooltip />
-          </PieChart>
-        </ResponsiveContainer>
+        
+        {pollData.length > 0 ? (
+          <ResponsiveContainer width="100%" height="80%">
+            <PieChart>
+              <Pie
+                data={chartData}
+                dataKey="value"
+                nameKey="name"
+                outerRadius={100}
+                label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+              >
+                {chartData.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                  />
+                ))}
+              </Pie>
+              <Tooltip 
+                formatter={(value: number, name: string) => [
+                  `${value} votes`,
+                  name,
+                ]}
+              />
+            </PieChart>
+          </ResponsiveContainer>
+        ) : (
+          <div className="flex justify-center items-center h-full">
+            <p className="text-gray-500">No poll data available</p>
+          </div>
+        )}
       </div>
     </div>
   );
