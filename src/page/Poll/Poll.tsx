@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
+import { HashLink } from "react-router-hash-link";
 import { Bounce, toast, ToastContainer } from "react-toastify";
 interface PollChangeParams {
   id: number;
@@ -144,13 +145,13 @@ export default function Poll() {
           </option>
         ))}
       </select>
-      <button
+      <HashLink to="/#pollUpdate"><button
         type="button"
         className="py-3 px-4 cursor-pointer  inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-gray-500 text-white hover:bg-gray-600 focus:outline-hidden focus:bg-gray-600 disabled:opacity-50 disabled:pointer-events-none"
         onClick={handleUserVote}
       >
         Vote
-      </button>
+      </button></HashLink>
       <ToastContainer
         position="top-right"
         autoClose={5000}

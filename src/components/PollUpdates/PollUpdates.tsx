@@ -93,7 +93,7 @@ export default function PollUpdates() {
   // }
 
   return (
-    <div className="bg-black text-white min-h-screen flex flex-col mt-0 justify-center items-center p-4">
+    <div className="bg-black text-white min-h-screen flex flex-col mt-0 justify-center items-center p-4" id="pollUpdate">
       <h1 className="text-2xl font-bold mb-8">Live Poll Results</h1>
 
       <div className="w-full max-w-md h-96 p-4 bg-white rounded-2xl shadow-lg">

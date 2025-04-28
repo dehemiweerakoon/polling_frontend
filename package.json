@@ -15,6 +15,7 @@
     "apexcharts": "^4.7.0",
     "axios": "^1.8.4",
     "clsx": "^2.1.1",
+    "hashlink": "^0.12.1",
     "loadash": "^1.0.0",
     "motion": "^12.7.4",
     "polling-front": "file:",
