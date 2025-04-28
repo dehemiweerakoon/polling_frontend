@@ -38,7 +38,7 @@ export default function PollUpdates() {
       setSocket(newSocket);
 
       // Get pollId from sessionStorage
-      const pollId = sessionStorage.getItem("pollId") || "9";
+      const pollId = sessionStorage.getItem("pollId");
       console.log(pollId);
       if (!pollId) {
         setError("No poll ID found in session storage");

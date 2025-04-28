@@ -1,4 +1,3 @@
-
 import axios from "axios";
 import { useState } from "react";
 import { Bounce, toast, ToastContainer } from "react-toastify";
@@ -12,6 +11,7 @@ export default function Poll() {
   const [pin, setPin] = useState(["", "", "", ""]);
   const [selectedOption, setSelectedOption] = useState(1);
   const [polls, setPolls] = useState<PollChangeParams[]>([]);
+  const [question, setQuestion] = useState("");
   //const nav = useNavigate();
 
   interface HandleChangeParams {
@@ -40,11 +40,17 @@ export default function Poll() {
   const handleSubmit = async () => {
     const pollId = pin.join("");
     if (pollId.length === 4) {
-      sessionStorage.setItem('pollId',pollId);
+      sessionStorage.setItem("pollId", pollId);
       const response = await axios.get(
         `http://localhost:9000/api/question/poll/${pollId}`
       );
       setPolls(response.data);
+      const getresponse = await axios.get(
+        `http://localhost:9000/api/poll/${pollId}`
+      );
+      //console.log(getresponse.data[0].text)
+      setQuestion(getresponse.data[0].text);
+
       // added with the submission id for the
     } else {
       alert("Please enter all 4 digits of the Poll ID.");
@@ -56,7 +62,7 @@ export default function Poll() {
       const response = await axios.put(
         `http://localhost:9000/api/question/vote/${selectedOption}`
       );
-      if (response.status === 202) {
+      if (response.status === 200) {
         //
         toast.success("Voted Successfully", {
           position: "top-right",
@@ -120,11 +126,17 @@ export default function Poll() {
           Underline select
         </label>
       </form>
+      {
+        <>
+          <h1 className="text-lg font-bold">{question}</h1>
+        </>
+      }
       <select
         id="underline_select"
         className="block py-2.5 px-5 text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
-      
-        onMouseDown={(e) => setSelectedOption(Number((e.target as HTMLSelectElement).value))}
+        onMouseDown={(e) =>
+          setSelectedOption(Number((e.target as HTMLSelectElement).value))
+        }
       >
         {polls.map((poll) => (
           <option key={poll.id} value={poll.id}>
